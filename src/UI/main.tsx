@@ -9,6 +9,8 @@ const MainStyled = styled.main`
   grid-area: main;
   background-color: var(--bg-color-main);
   overflow-y: scroll;
+  position: relative;
+  z-index: 1;
 `
 
 export const Main:FC = ()=>{

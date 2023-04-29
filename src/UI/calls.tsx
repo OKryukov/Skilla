@@ -6,12 +6,7 @@ import { BadlySVG, BalanceSVG, FallIncomingSVG, FallOutgoingSVG, FineSVG, GreatS
 import { actionCreators } from '../BLL/callsReducer'
 import { StateTape } from '../BLL/store'
 import { More } from './commons/more'
-
-const callsList = [
-  {type: 'outgoin', time: '19:00', employee: '', call: '+7 (987) 567-17-12', source: 'Rabota.ru', grade: 'great', duration: '12:06'},
-  {type: 'incoming', time: '18:00', employee: '', call: '+7 (987) 555-12-82', source: 'Google', grade: 'fine', duration: '4:06'},
-  {type: 'outgoin', time: '13:00', employee: '', call: '+7 (987) 555-22-02', source: 'Yandex', grade: 'badly', duration: '10:06'},
-]
+import { Audio } from './commons/audio'
 
 const CallsStyled = styled.main`
 grid-area: main;
@@ -41,6 +36,16 @@ font-family: 'SFProDisplay';
     }
     .balance__add{
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      &:hover path{
+        fill: #0024CB;
+      }
+    }
+    &:hover{
+      .balance__value{
+        color: var(--color-blue);
+      }
     }
   }
   .interval{
@@ -51,15 +56,22 @@ font-family: 'SFProDisplay';
       gap: 8px;
       color: #005FF8;
       cursor: pointer;
+      &:hover path{
+        fill: var(--color-blue);
+      }
     }
     .interval__left, .interval__right{
       width: 16px;
       height: 24px;
       cursor: pointer;
+      &:hover path{
+        fill: var(--color-blue);
+      }
     }
     .interval__right{
       text-align: right;
     }
+
   }
 
 }
@@ -76,6 +88,12 @@ font-family: 'SFProDisplay';
     grid-gap: 12px;
     align-items: center;
     cursor: pointer;
+    &:hover{
+      color: var(--color-blue);
+      & path{
+        fill: var(--color-blue);
+      }
+    }
   }
   .filter__filters{
     display: flex;
@@ -85,10 +103,15 @@ font-family: 'SFProDisplay';
       align-items: center;
       cursor: pointer;
     }
+    &>*:hover{
+      color: var(--color-blue);
+      & path{
+        fill: var(--color-blue);
+      }
+    }
   }
 }
 .table{
-  padding: 0 40px;
   display: grid;
   grid-template-rows: 60px 1fr;
   font-family: 'SFProDisplay';
@@ -97,11 +120,15 @@ font-family: 'SFProDisplay';
   margin-bottom: 60px;
   .table__head{
     display: grid;
-    grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 460px) 89px;
+    grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 197px) 352px;
     align-items: center;
     color: #899CB1;
     font-size: 14px;
     font-weight: 400;
+    padding: 0 40px;
+    .duration{
+      justify-self: end;
+    }
   }
   .table__body{
     font-size: 15px;
@@ -110,10 +137,13 @@ font-family: 'SFProDisplay';
     grid-auto-rows: 64px;
     .table__row{
       display: grid;
-      grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 460px) 89px;
+      grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 197px) 352px;
       align-items: center;
       border-top: 1px solid #EAF0FA;
+      cursor: pointer;
       color: #122945;
+      padding: 0 40px;
+      position: relative;
       .type{
         height: 24px;
         width: 24px;
@@ -134,6 +164,15 @@ font-family: 'SFProDisplay';
       }
       .duration{
         justify-self: end;
+      }
+    }
+    .table__row:hover{
+      background-color: #d4dff32d;
+      .duration{
+        display: none;
+      }
+      .audio{
+        display: flex;
       }
     }
   }
@@ -159,17 +198,23 @@ export const Calls:FC = ()=>{
     ;
   }
   const tableBody = list.map((call:any)=>{
+    const random = ()=>{
+      let rand = 1 - 0.5 + Math.random() * (2 - 0 + 1);
+      return Math.round(rand);
+    }
+    const randomGrade = call.time===0?0:random()
+    let time = duration(call.time)
     return(
       <div className='table__row' key={v1()}>
         <div className="type">{call.in_out===1?call.time===0?<FallOutgoingSVG/>:<OutgoingSVG/>:call.time===0?<FallIncomingSVG/>:<IncomingSVG/>}</div>
-        <div className="time">{call.date}</div>
+        <div className="time">{call.date.substring(11,16)}</div>
         <div className="employee">
           <img className="employee__avatar" src={call.person_avatar}/>
         </div>
         <div className="call">{call.in_out===1?call.from_number:call.to_number}</div>
         <div className="source">{call.source}</div>
-        <div className="grade">{call.is_skilla===0?<GreatSVG/>:call.grade===1?<FineSVG/>:<BadlySVG/>}</div>
-        <div className="duration">{duration(call.time)}</div>
+        <div className="grade">{randomGrade===3?<GreatSVG/>:randomGrade===2?<FineSVG/>:randomGrade===1?<BadlySVG/>:''}</div>
+        <Audio duration={time}/><div className="duration">{time}</div>
       </div>
     )
   })

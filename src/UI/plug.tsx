@@ -1,5 +1,6 @@
 import {FC} from 'react'
 import styled from 'styled-components'
+import mp3 from '../BLL/audio/ShutYourMouth.mp3'
 
 
 const PlugStyled = styled.main`
@@ -35,6 +36,9 @@ export const Plug:FC = ()=>{
         <a className='author_link' href='https://github.com/OKryukov' target='_blank'>Крюков Олег</a>
       </div>
       <div className='date'>От 28.04.2023</div>
+      <audio controls>
+        <source src={mp3} type="audio/mp3"/>
+      </audio>
     </PlugStyled>
   )
 }
