@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { CallsSVG, MailSVG, OpenPageSVG, OutSVG, SearchSVG } from './commons/svgStorage'
 import { useSelector } from 'react-redux'
@@ -97,18 +97,24 @@ const HeaderStyled = styled.header`
       .avatar{
         display: grid;
         grid-template-columns: 40px 24px;
-        grid-gap: 4px;
+        grid-gap: 3px;
         align-items: center;
         margin-left: 47px;
         cursor: pointer;
+        height: 64px;
         .avatar__img{
           border-radius: 50%;
         }
-        .avatar__more_rotate{
+      }
+      .avatar:hover{
+        .avatar__more{
           transform: rotate(180deg);
           & path{
             fill: #0024CB;
           }
+        }
+        .profile{
+          display: block;
         }
       }
     }
@@ -116,6 +122,7 @@ const HeaderStyled = styled.header`
   .profile{
     position: absolute;
     z-index: 4;
+    top: 64px;
     right: 8px;
     display: none;
     width: 368px;
@@ -210,19 +217,10 @@ const HeaderStyled = styled.header`
       }
     }
   }
-  .profile.active{
-    display: block;
-  }
 `
 
 export const Header:FC = ()=>{
   const state = useSelector((state:StateTape)=>state.header)
-  const profileRef = useRef<HTMLDivElement>(null)
-  const [isProfile, setIsProfile] = useState<boolean>(false)
-  const toogleProfile = ()=>{
-    setIsProfile(isProfile?false:true)
-    profileRef.current?.classList.toggle('active')
-  }
   return(
     <HeaderStyled>
       <div className="header__container">
@@ -251,88 +249,89 @@ export const Header:FC = ()=>{
                 <div className="client__name">{state.name}</div>
                 <div className="client__more"><More /></div>
               </div>
-              <div className="avatar" onClick={toogleProfile}>
+              <div className="avatar">
                 <img className="avatar__img" src={state.avatar} />
-                <div className={`avatar__more ${isProfile?'avatar__more_rotate':null}`}><More /></div>
+                <div className="avatar__more"><More /></div>
+                <div className="profile">
+                  <div className="profile__data">
+                    <div className="nameAndOut">
+                      <div className="name">Упоров Кирилл</div>
+                      <NavLink to='/signout' className="out"><OutSVG /></NavLink>
+                    </div>
+                    <div className="jobAndlocation">
+                      <div className="job">Директор</div>
+                      <div className="point"></div>
+                      <div className="location">Санкт-Петербург</div>
+                    </div>
+                    <div className="phone">
+                      <CallsSVG />
+                      <div className="number">8 (800) 333-17-21</div>
+                    </div>
+                    <div className="email">
+                      <MailSVG />
+                      <div className="mail">hi@skilla.ru</div>
+                    </div>
+                  </div>
+                  <div className="profile__article">
+                    <div className="profile__title">Операторы</div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Мирон Батонов</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Алексей Ильин</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Милана Константинопольская</div>
+                      <OpenPageSVG />
+                    </div>
+                  </div>
+                  <div className="profile__article">
+                    <div className="profile__title">Логисты</div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Александра Сизых</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Илья Алексеев</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Владимир Петров</div>
+                      <OpenPageSVG />
+                    </div>
+                  </div>
+                  <div className="profile__article">
+                    <div className="profile__title">Бухгалтеры</div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Полина Калинина</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Наталья Натальева</div>
+                      <OpenPageSVG />
+                    </div>
+                    <div className="profile__item">
+                      <img src={state.avatar} />
+                      <div className="profile__item_name">Константин Константинопольский</div>
+                      <OpenPageSVG />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="profile" ref={profileRef}>
-          <div className="profile__data">
-            <div className="nameAndOut">
-              <div className="name">Упоров Кирилл</div>
-              <NavLink to='/signout' className="out"><OutSVG/></NavLink>
-            </div>
-            <div className="jobAndlocation">
-              <div className="job">Директор</div>
-              <div className="point"></div>
-              <div className="location">Санкт-Петербург</div>
-            </div>
-            <div className="phone">
-              <CallsSVG/>
-              <div className="number">8 (800) 333-17-21</div>
-            </div>
-            <div className="email">
-              <MailSVG/>
-              <div className="mail">hi@skilla.ru</div>
-            </div>
-          </div>
-          <div className="profile__article">
-            <div className="profile__title">Операторы</div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Мирон Батонов</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Алексей Ильин</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Милана Константинопольская</div>
-              <OpenPageSVG/>
-            </div>
-          </div>
-          <div className="profile__article">
-            <div className="profile__title">Логисты</div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Александра Сизых</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Илья Алексеев</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Владимир Петров</div>
-              <OpenPageSVG/>
-            </div>
-          </div>
-          <div className="profile__article">
-            <div className="profile__title">Бухгалтеры</div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Полина Калинина</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Наталья Натальева</div>
-              <OpenPageSVG/>
-            </div>
-            <div className="profile__item">
-              <img src={state.avatar}/>
-              <div className="profile__item_name">Константин Константинопольский</div>
-              <OpenPageSVG/>
-            </div>
-          </div>
-        </div>
+
       </div>
     </HeaderStyled>
   )

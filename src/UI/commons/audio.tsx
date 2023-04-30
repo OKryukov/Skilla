@@ -17,6 +17,7 @@ const AudioStyled = styled.div.attrs({className:'audio'})`
   display: flex;
   align-items: center;
   display: none;
+  position: relative;
   .audio__time{
     width: 36px;
     margin-right: 12px;
@@ -30,12 +31,23 @@ const AudioStyled = styled.div.attrs({className:'audio'})`
     justify-content: center;
     align-items: center;
   }
-  .audio__line{
+  .audio__progress{
     width: 164px;
     height: 4px;
     border-radius: 50px;
-    background-color: #ADBFDF;
     margin: 0 12px 0 8px;
+    &::-webkit-progress-bar{
+      background-color: #ADBFDF;
+    }
+    &::-webkit-progress-value{
+      background-color: #002CFB;
+    }
+  }
+  .audio__input{
+    position: absolute;
+    left: 98px;
+    width: 164px;
+    opacity: 0;
   }
   .audio__download, .audio__close{
     width: 24px;
@@ -60,15 +72,26 @@ export const Audio:FC<{duration:string|null}> = (props)=>{
     setIsplay(isPlay?false:true)
     isPlay?audioItem.current.pause():audioItem.current.play()
   }
+  const endHandler = ()=>{
+    setIsplay(isPlay?false:true)
+    audioItem.current.load()
+  }
+  const [ percentage, setPercentage ] = useState<number>(0)
+  const changeHandler = (event:any)=>{
+    setPercentage(event.target.value)
+    audioItem.current.currentTime = audioItem.current?.duration/100 * event.target.value
+  }
   const timeUpdateHandler = ()=>{
     let date = new Date(audioItem.current.currentTime * 1000)
     setDuration(date.getMinutes()+':'+date.getSeconds())
   }
   return(
     <AudioStyled>
-      <audio src={mp3} ref={audioItem} onTimeUpdate={timeUpdateHandler}></audio>
+      <audio src={mp3} ref={audioItem} onTimeUpdate={timeUpdateHandler} onEnded={endHandler}></audio>
       <div className="audio__time">{duration}</div>
       <div className="audio__stop" onClick={playHandler}>{isPlay?<AudioStopSVG/>:<AudioPlaySVG/>}</div>
+      <progress className="audio__progress" max={audioItem.current?.duration} value={audioItem.current?.currentTime}></progress>
+      <input className="audio__input" type='range' onChange={changeHandler} value={!audioItem.current?.currentTime?0:audioItem.current?.currentTime/audioItem.current?.duration*100}/>
       <div className="audio__line"></div>
       <div className="audio__download"><AudioDownloadSVG/></div>
       <div className="audio__close"><AudioCloseSVG/></div>
