@@ -1,7 +1,7 @@
 import {FC} from 'react'
 import { Routes, Route } from 'react-router-dom'
 import styled from 'styled-components'
-import { Calls } from './calls'
+import { Calls } from './calls/calls'
 import { Plug } from './plug'
 
 

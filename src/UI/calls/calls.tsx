@@ -1,13 +1,12 @@
 import { FC, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { v1 } from 'uuid'
-import { AudioCloseSVG, BadlySVG, BalanceSVG, FallIncomingSVG, FallOutgoingSVG, FineSVG, GreatSVG, IncomingSVG, LeftSVG, OutgoingSVG, RightSVG, SearchSVG, СalendarSVG} from './commons/svgStorage'
-import { actionCreators } from '../BLL/callsReducer'
-import { StateTape } from '../BLL/store'
-import { More } from './commons/more'
-import { Audio } from './commons/audio'
-import avatar from '../BLL/images/avatar.jpg'
+import { AudioCloseSVG, BadlySVG, BalanceSVG, FineSVG, GreatSVG, LeftSVG, RightSVG, SearchSVG, СalendarSVG} from '../commons/svgStorage'
+import { actionCreators } from '../../BLL/callsReducer'
+import { More } from '../commons/more'
+import avatar from '../../BLL/images/avatar.jpg'
+import { Table } from './table'
+import { StateTape } from '../../BLL/store'
 
 const CallsStyled = styled.main<{isSearchNumber:boolean}>`
 grid-area: main;
@@ -19,6 +18,7 @@ font-family: 'SFProDisplay';
   gap: 48px;
   align-items: center;
   justify-content: flex-end;
+  overflow: visible;
   .balance{
     display: inline-grid;
     grid-template-columns: max-content 24px;
@@ -52,7 +52,13 @@ font-family: 'SFProDisplay';
   .interval{
     display: flex;
     gap: 12px;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    align-items: center;
     .interval__value{
+      margin-top: 29px;
+      padding-bottom: 29px;
       display: flex;
       gap: 8px;
       color: #005FF8;
@@ -72,7 +78,38 @@ font-family: 'SFProDisplay';
     .interval__right{
       text-align: right;
     }
-
+    .interval__filter{
+      position: absolute;
+      display: none;
+      z-index: 4;
+      right: 0;
+      top: 80px;
+      width: 204px;
+      border-radius: 4px;
+      background-color: #fff;
+      box-shadow: 0 0 26px 0 #e9edf3cc;
+      &>*{
+        height: 40px;
+        padding-left: 20px;
+        color: #899CB1;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        cursor: pointer;
+      }
+      &>.title{
+          color: #002efbdd;
+        }
+      &>*:not(.title):hover{
+        background-color: #002efb21;
+        color: #122945;
+      }
+    }
+    .interval__value:hover{
+      .interval__filter{
+        display: block;
+      }
+    }
   }
 
 }
@@ -201,120 +238,21 @@ font-family: 'SFProDisplay';
     }
   }
 }
-.table{
-  display: grid;
-  grid-template-rows: 60px 1fr;
-  font-family: 'SFProDisplay';
-  background-color: #fff;
-  border-radius: 8px;
-  margin-bottom: 60px;
-  .table__head{
-    display: grid;
-    grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 197px) 352px;
-    align-items: center;
-    color: #899CB1;
-    font-size: 14px;
-    font-weight: 400;
-    padding: 0 40px;
-    .duration{
-      justify-self: end;
-    }
-  }
-  .table__body{
-    font-size: 15px;
-    font-weight: 400;
-    display: grid;
-    grid-auto-rows: 64px;
-    .table__row{
-      display: grid;
-      grid-template-columns: minmax(25px, 54px) minmax(48px, 89px) minmax(76px, 128px) minmax(250px, 326px) 214px minmax(170px, 197px) 352px;
-      align-items: center;
-      border-top: 1px solid #EAF0FA;
-      cursor: pointer;
-      color: #122945;
-      padding: 0 40px;
-      position: relative;
-      .type{
-        height: 24px;
-        width: 24px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .employee{
-        display: grid;
-        align-items: center;
-        .employee__avatar{
-          width: 32px;
-          border-radius: 50%;
-        }
-      }
-      .source{
-        color: #5E7793;
-      }
-      .duration{
-        justify-self: end;
-      }
-    }
-    .table__row:hover{
-      background-color: #d4dff32d;
-      .duration{
-        display: none;
-      }
-      .audio{
-        display: flex;
-      }
-    }
-  }
-}
 `
-
 export const Calls:FC = ()=>{
-  const [isSearchNumber, setIsSearchNumber] = useState<boolean>(false)
-  const serchNumberHandler = ()=>{
-    setIsSearchNumber(isSearchNumber?false:true)
-    
-  }
   const dispatch = useDispatch()
   useEffect(()=>{
     dispatch(actionCreators.getCallsAsyncAC())
   },[])
-  let list = useSelector((state:StateTape)=>state.calls.callsList)
-  let duration = (sec:number)=>{
-    let minutes = Math.trunc(sec/60);
-    let seconds = sec % 60;
-    if(sec === 0){
-      return null
-    }else if(seconds<10){
-      return `${minutes}:0${seconds}`
-    }else{
-      return `${minutes}:${seconds}`
-    }
-    ;
+  let listCalls = useSelector((state:StateTape)=>state.calls.callsList)
+  const [searchValue,setSearchValue] = useState('')
+  const [isSearch, setIsSearch] = useState<boolean>(false)
+  const serchHandler = ()=>{
+    setIsSearch(isSearch?false:true)
+    setSearchValue('')
   }
-  const tableBody = list.map((call:any)=>{
-    const random = ()=>{
-      let rand = 1 - 0.5 + Math.random() * (2 - 0 + 1);
-      return Math.round(rand);
-    }
-    const randomGrade = call.time===0?0:random()
-    let time = duration(call.time)
-    return(
-      <div className='table__row' key={v1()}>
-        <div className="type">{call.in_out===1?call.time===0?<FallOutgoingSVG/>:<OutgoingSVG/>:call.time===0?<FallIncomingSVG/>:<IncomingSVG/>}</div>
-        <div className="time">{call.date.substring(11,16)}</div>
-        <div className="employee">
-          <img className="employee__avatar" src={call.person_avatar}/>
-        </div>
-        <div className="call">{call.in_out===1?call.from_number:call.to_number}</div>
-        <div className="source">{call.source}</div>
-        <div className="grade">{randomGrade===3?<GreatSVG/>:randomGrade===2?<FineSVG/>:randomGrade===1?<BadlySVG/>:''}</div>
-        <Audio duration={time}/><div className="duration">{time}</div>
-      </div>
-    )
-  })
   return(
-    <CallsStyled isSearchNumber={isSearchNumber}>
+    <CallsStyled isSearchNumber={isSearch}>
       <div className="calls__container">
         <div className="calls__inner">
           <div className="unclear">
@@ -327,18 +265,28 @@ export const Calls:FC = ()=>{
               <div className="interval__value">
                 <div className="interval__calendar"><СalendarSVG/></div>
                 <div className="interval__text">{'3 дня'}</div>
+                <div className="interval__filter">
+                  <div className="title">{'3 дня'}</div>
+                  <div className="item">Неделя</div>
+                  <div className="item">Месяц</div>
+                  <div className="item">Год</div>
+                  <div className="date">
+                    <div className='date__title'>Указать даты</div>
+                    <div className='date__input'>date__input</div>
+                  </div>
+                </div>
               </div>
               <div className="interval__right"><RightSVG/></div>
             </div>
           </div>
           <div className="filter">
             <div className="filter__search search">
-              <div className="search__svg"onClick={serchNumberHandler}><SearchSVG/></div>
-              <div className="search__text"onClick={serchNumberHandler}>Поиск по звонкам</div>
+              <div className="search__svg"onClick={serchHandler}><SearchSVG/></div>
+              <div className="search__text"onClick={serchHandler}>Поиск по звонкам</div>
               <div className="search__input">
-                <input type='tel' />
+                <input type='tel' value={searchValue} onChange={(event)=>setSearchValue(event.target.value)}/>
                 <div className="search"><SearchSVG/></div>
-                <div className="close" onClick={serchNumberHandler}><AudioCloseSVG/></div>
+                <div className="close" onClick={serchHandler}><AudioCloseSVG/></div>
               </div>
             </div>
             <div className="filter__filters">
@@ -418,20 +366,7 @@ export const Calls:FC = ()=>{
               </div>
             </div>
           </div>
-          <div className="table">
-            <div className="table__head">
-              <div className="type">Тип</div>
-              <div className="time">Время</div>
-              <div className="employee">Сотрудник</div>
-              <div className="call">Звонок</div>
-              <div className="source">Источник</div>
-              <div className="grade">Оценка</div>
-              <div className="duration">Длительность</div>
-            </div>
-            <div className="table__body">
-              {tableBody}
-            </div>
-          </div>
+          <Table listCalls={listCalls}/>
         </div>
       </div>
     </CallsStyled>
