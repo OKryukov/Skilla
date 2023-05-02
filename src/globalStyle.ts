@@ -6,6 +6,27 @@ ul,ol,li {list-style: none;}
 a {text-decoration: none; color: inherit;}
 h1,h2,h3,h4,h5,h6 {font-weight: inherit; font-size: inherit;}
 
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type='number'], input[type="number"]:hover, input[type="number"]:focus {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+select{
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+
+  border: none;
+  outline:none;
+  background-color: transparent;
+}
+select::-ms-expand{
+  display: none;
+}
+
 :root{
   --bg-color-navbar: #091336;
   --bg-color-header: #FFFFFF;
@@ -25,4 +46,5 @@ h1,h2,h3,h4,h5,h6 {font-weight: inherit; font-size: inherit;}
   max-width: 1440px;
   margin: 0 auto;
 }
+
 `

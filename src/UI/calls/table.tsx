@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC , useEffect} from 'react'
 import styled from 'styled-components'
 import { BadlySVG, FallIncomingSVG, FallOutgoingSVG, FineSVG, GreatSVG, IncomingSVG, OutgoingSVG } from '../commons/svgStorage'
 import { v1 } from 'uuid'

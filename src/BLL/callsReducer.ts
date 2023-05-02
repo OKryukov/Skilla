@@ -19,7 +19,7 @@ export const callsReducer = ( state = initialState, action:ActionsTypes):Initial
   switch(action.type){
     case AT.ADD_CALLS:
       console.log(action.payload)
-      return{...state, callsList:action.payload}
+      return {...state, callsList:action.payload}
     default:
       return state
   }

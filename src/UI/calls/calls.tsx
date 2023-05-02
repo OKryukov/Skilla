@@ -1,12 +1,8 @@
 import { FC, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { AudioCloseSVG, BadlySVG, BalanceSVG, FineSVG, GreatSVG, LeftSVG, RightSVG, SearchSVG, СalendarSVG} from '../commons/svgStorage'
-import { actionCreators } from '../../BLL/callsReducer'
-import { More } from '../commons/more'
-import avatar from '../../BLL/images/avatar.jpg'
+import { AudioCloseSVG, BalanceSVG, LeftSVG, RightSVG, SearchSVG, СalendarSVG} from '../commons/svgStorage'
 import { Table } from './table'
-import { StateTape } from '../../BLL/store'
+import { Filters } from './filters'
 
 const CallsStyled = styled.main<{isSearchNumber:boolean}>`
 grid-area: main;
@@ -180,77 +176,33 @@ font-family: 'SFProDisplay';
     }
     
   }
-  .filter__filters{
-    display: flex;
-    gap: 32px;
-    overflow: visible;
-    &>*{
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      padding-bottom: 12px;
-      margin-top: 12px;
-    }
-    &>*:hover{
-      color: var(--color-blue);
-      & path{
-        fill: var(--color-blue);
-      }
-    }
-    .f-por{
-      position: relative;
-      overflow: visible;
-      .f-abs{
-        position: absolute;
-        display: none;
-        z-index: 3;
-        right: 0;
-        top: 36px;
-        width: 204px;
-        border-radius: 4px;
-        background-color: #fff;
-        box-shadow: 0 0 26px 0 #e9edf3cc;
-        &>*{
-          height: 40px;
-          padding-left: 20px;
-          color: #899CB1;
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          .item__avatar{
-            width: 32px;
-            border-radius: 50%;
-          }
-        }
-        &>.title{
-          color: #002efbdd;
-        }
-        &>*:not(.title):hover{
-          background-color: #002efb21;
-          color: #122945;
-        }
-      }
-    }
-    .f-por:hover{
-      & .f-abs{
-        display: block;
-      }
-    }
-  }
 }
+
 `
-export const Calls:FC = ()=>{
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(actionCreators.getCallsAsyncAC())
-  },[])
-  let listCalls = useSelector((state:StateTape)=>state.calls.callsList)
+const filterCalls = (searchValue:any, list:any) => {
+  if (!searchValue) {
+    return list;
+  }
+  return list.filter((call:any) =>
+    call.from_number.includes(searchValue)
+  );
+}
+export const Calls:FC<any> = (props:any)=>{
+  const {defaultCallsList} = props
+  const [callsList, setCallsList] = useState(defaultCallsList)
   const [searchValue,setSearchValue] = useState('')
   const [isSearch, setIsSearch] = useState<boolean>(false)
   const serchHandler = ()=>{
     setIsSearch(isSearch?false:true)
     setSearchValue('')
   }
+  useEffect(()=>{
+    setCallsList(defaultCallsList)
+  },[defaultCallsList])
+  useEffect(()=>{
+    const filteredCalls = filterCalls(searchValue,defaultCallsList)
+    setCallsList(filteredCalls)
+  },[searchValue])
   return(
     <CallsStyled isSearchNumber={isSearch}>
       <div className="calls__container">
@@ -284,89 +236,14 @@ export const Calls:FC = ()=>{
               <div className="search__svg"onClick={serchHandler}><SearchSVG/></div>
               <div className="search__text"onClick={serchHandler}>Поиск по звонкам</div>
               <div className="search__input">
-                <input type='tel' value={searchValue} onChange={(event)=>setSearchValue(event.target.value)}/>
+                <input type='number' value={searchValue} onChange={(event)=>setSearchValue(event.target.value)}/>
                 <div className="search"><SearchSVG/></div>
                 <div className="close" onClick={serchHandler}><AudioCloseSVG/></div>
               </div>
             </div>
-            <div className="filter__filters">
-              <div className="allTypes f-por">
-                <div className="allTypes__text">Все типы</div>
-                <div className="allTypes__btn"><More /></div>
-                <div className="allTypes__filter f-abs">
-                <div className="title">Все типы</div>
-                  <div className="item">Клиенты</div>
-                  <div className="item">Новые клиенты</div>
-                  <div className="item">Рабочие</div>
-                  <div className="item">Приложение</div>
-                </div>
-              </div>
-              <div className="allEmployees f-por">
-                <div className="allEmployees__text">Все сотрудники</div>
-                <div className="allEmployees__btn"><More /></div>
-                <div className="allEmployees__filter f-abs">
-                  <div className="title">Все сотрудники</div>
-                  <div className="item">
-                    <img src={avatar} className="item__avatar" />
-                    <div className="item__name">Константин К.</div>
-                  </div>
-                  <div className="item">
-                    <img src={avatar} className="item__avatar" />
-                    <div className="item__name">Полина З.</div>
-                  </div>
-                </div>
-              </div>
-              <div className="allCalls f-por">
-                <div className="allCalls__text">Все звонки</div>
-                <div className="allCalls__btn"><More /></div>
-                <div className="allCalls__filter f-abs">
-                  <div className="title">Все звонки</div>
-                  <div className="item">Новые клиенты</div>
-                  <div className="item">Все исполнители</div>
-                  <div className="item">Через приложение</div>
-                  <div className="item">Прочие звонки</div>
-                </div>
-              </div>
-              <div className="allSource f-por">
-                <div className="allSource__text">Все источники</div>
-                <div className="allSource__btn"><More /></div>
-                <div className="allSource__filter f-abs">
-                  <div className="title">Все источники</div>
-                  <div className="item">С сайта</div>
-                  <div className="item">Yandex номер</div>
-                  <div className="item">Google номер</div>
-                  <div className="item">Без источника</div>
-                </div>
-              </div>
-              <div className="allGrade f-por">
-                <div className="allGrade__text">Все оценки</div>
-                <div className="allGrade__btn"><More /></div>
-                <div className="allGrade__filter f-abs">
-                  <div className="title">Все оценки</div>
-                  <div className="item">Распознать</div>
-                  <div className="item">Скрипт не использован</div>
-                  <div className="item"><GreatSVG/></div>
-                  <div className="item"><FineSVG/></div>
-                  <div className="item"><BadlySVG/></div>
-                </div>
-              </div>
-              <div className="allErrors f-por">
-                <div className="allErrors__text">Все ошибки</div>
-                <div className="allErrors__btn"><More /></div>
-                <div className="allErrors__filter f-abs">
-                  <div className="title">Все ошибки</div>
-                  <div className="item">Приветствие</div>
-                  <div className="item">Имя</div>
-                  <div className="item">Цена</div>
-                  <div className="item">Скидка</div>
-                  <div className="item">Предзаказ</div>
-                  <div className="item">Благодарность</div>
-                  <div className="item">Стоп слова</div>
-                </div>
-              </div>
-            </div>
+            <Filters/>
           </div>
-          <Table listCalls={listCalls}/>
+          <Table listCalls={callsList}/>
         </div>
       </div>
     </CallsStyled>

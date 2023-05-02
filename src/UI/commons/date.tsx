@@ -58,7 +58,6 @@ export const CurrentDate:FC = ()=>{
         return 'дек'
     }
   }
-  console.log(day())
   return(
     <CurrentDateStyled>
       {`${day()}, ${date} ${month()}`}
