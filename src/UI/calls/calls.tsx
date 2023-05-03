@@ -1,10 +1,12 @@
 import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { AudioCloseSVG, BalanceSVG, LeftSVG, RightSVG, SearchSVG, СalendarSVG} from '../commons/svgStorage'
+import { BalanceSVG, LeftSVG, RightSVG, СalendarSVG} from '../commons/svgStorage'
 import { Table } from './table'
 import { Filters } from './filters'
+import { Search } from './search'
 
-const CallsStyled = styled.main<{isSearchNumber:boolean}>`
+const CallsStyled = styled.main`
+.calls__inner{min-height: 100vh;}
 grid-area: main;
 background-color: var(--bg-color-main);
 font-family: 'SFProDisplay';
@@ -107,7 +109,6 @@ font-family: 'SFProDisplay';
       }
     }
   }
-
 }
 .filter{
   height: 48px;
@@ -117,94 +118,16 @@ font-family: 'SFProDisplay';
   color: #5E7793;
   font-size: 14px;
   overflow: visible;
-  .filter__search{
-    display: grid;
-    grid-template-columns: 16px max-content;
-    grid-gap: 12px;
-    align-items: center;
-    position: relative;
-    overflow: visible;
-    cursor: pointer;
-    .search__input{
-      position: absolute;
-      display: ${({isSearchNumber})=>isSearchNumber?'blok':'none'};
-      z-index: 3;
-      border-radius: 48px;
-      & input{
-        width: 482px;
-        height: 40px;
-        border: 1px solid #EAF0FA;
-        border-radius: 48px;
-        outline: none;
-        padding: 10px 46px;
-        font-size: 14px;
-        font-weight: 400;
-        font-family: 'SFProDisplay';
-        &:focus{
-          border-color: #002CFB;
-        }
-      }
-      & .close, .search{
-        position: absolute;
-        top: 0;
-        z-index: 4;
-        width: 46px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        & svg{
-          width: 14px;
-          height: 14px;
-        }
-      }
-      & .close{
-        right: 0px;
-        &:hover path{
-          fill: var(--color-blue);
-        }
-      }
-      & .search{
-        left: 0px;
-      }
-    }
-    &:hover{
-      color: var(--color-blue);
-      &.search__svg path{
-        fill: var(--color-blue);
-      }
-    }
-    
-  }
 }
-
 `
-const filterCalls = (searchValue:any, list:any) => {
-  if (!searchValue) {
-    return list;
-  }
-  return list.filter((call:any) =>
-    call.from_number.includes(searchValue)
-  );
-}
 export const Calls:FC<any> = (props:any)=>{
-  const {defaultCallsList} = props
+  const { defaultCallsList , getList, getEmployees} = props
   const [callsList, setCallsList] = useState(defaultCallsList)
-  const [searchValue,setSearchValue] = useState('')
-  const [isSearch, setIsSearch] = useState<boolean>(false)
-  const serchHandler = ()=>{
-    setIsSearch(isSearch?false:true)
-    setSearchValue('')
-  }
   useEffect(()=>{
     setCallsList(defaultCallsList)
   },[defaultCallsList])
-  useEffect(()=>{
-    const filteredCalls = filterCalls(searchValue,defaultCallsList)
-    setCallsList(filteredCalls)
-  },[searchValue])
   return(
-    <CallsStyled isSearchNumber={isSearch}>
+    <CallsStyled>
       <div className="calls__container">
         <div className="calls__inner">
           <div className="unclear">
@@ -232,16 +155,8 @@ export const Calls:FC<any> = (props:any)=>{
             </div>
           </div>
           <div className="filter">
-            <div className="filter__search search">
-              <div className="search__svg"onClick={serchHandler}><SearchSVG/></div>
-              <div className="search__text"onClick={serchHandler}>Поиск по звонкам</div>
-              <div className="search__input">
-                <input type='number' value={searchValue} onChange={(event)=>setSearchValue(event.target.value)}/>
-                <div className="search"><SearchSVG/></div>
-                <div className="close" onClick={serchHandler}><AudioCloseSVG/></div>
-              </div>
-            </div>
-            <Filters/>
+            <Search defaultCallsList={defaultCallsList} setCallsList={setCallsList}/>
+            <Filters getList={getList} getEmployees={getEmployees}/>
           </div>
           <Table listCalls={callsList}/>
         </div>

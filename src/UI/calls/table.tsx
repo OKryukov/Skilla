@@ -1,4 +1,4 @@
-import { FC , useEffect} from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { BadlySVG, FallIncomingSVG, FallOutgoingSVG, FineSVG, GreatSVG, IncomingSVG, OutgoingSVG } from '../commons/svgStorage'
 import { v1 } from 'uuid'
@@ -73,7 +73,7 @@ const TableStyled = styled.div`
 }
 `
 
-export const Table:FC<{listCalls:any}> =(props)=>{
+export const Table:FC<{listCalls:any}> = (props)=>{
   const {listCalls} = props
   let duration = (sec:number)=>{
     let minutes = Math.trunc(sec/60);
@@ -87,7 +87,7 @@ export const Table:FC<{listCalls:any}> =(props)=>{
     }
     ;
   }
-  const tableBody = listCalls.map((call:any)=>{
+  const tableBody = listCalls?.map((call:any)=>{
     const random = ()=>{
       let rand = 1 - 0.5 + Math.random() * (2 - 0 + 1);
       return Math.round(rand);

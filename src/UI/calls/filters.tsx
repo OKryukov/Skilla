@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { BadlySVG, FineSVG, GreatSVG } from '../commons/svgStorage'
 import { More } from '../commons/more'
@@ -64,22 +64,28 @@ overflow: visible;
     fill: var(--color-blue);
   }
 }
-.f-input{
-  display: none;
-}
 `
 
-export const Filters:FC = () => {
+export const Filters:FC<any> = (props) => {
+  const { getList, getEmployees } = props
+  const [allFilters, setAllFilters] =useState({
+    type: '',
+    source: '',
+  })
+  useEffect(()=>{
+    getEmployees()
+  },[])
+  useEffect(()=>{
+    getList(allFilters)
+  },[allFilters])
   const [typesCurrent, setTypesCurrent] = useState('Все типы')
   const typesClickHandler = (event:any)=>{
     setTypesCurrent(event.target.outerText)
-    console.log(event)
-    event.target.parentElement.nextSibling.value = event.target.dataset.value
+    setAllFilters({...allFilters, type:event.target.dataset.value})
   }
   const [employeesCurrent, setEmployeesCurrent] = useState('Все сотрудники')
   const employeesClickHandler = (event:any)=>{
     setEmployeesCurrent(event.target.outerText)
-    event.target.parentElement.nextSibling.value = event.target.dataset.value
   }
   const [callsCurrent, setCallsCurrent] = useState('Все звонки')
   const callsClickHandler = (event:any)=>{
@@ -89,18 +95,16 @@ export const Filters:FC = () => {
   const [sourcesCurrent, setSourcesCurrent] = useState('Все источники')
   const sourcesClickHandler = (event:any)=>{
     setSourcesCurrent(event.target.outerText)
-    event.target.parentElement.nextSibling.value = event.target.dataset.value
+    setAllFilters({...allFilters, source:event.target.dataset.value})
   }
   const [gradesCurrent, setGradesCurrent] = useState('Все оценки')
   const gradesClickHandler = (event:any)=>{
     setGradesCurrent(event.target.outerText)
-    event.target.parentElement.nextSibling.value = event.target.dataset.value
   }
   const [errorsCurrent, setErrorsCurrent] = useState('Все ошибки')
   const errorsClickHandler = (event:any)=>{
     console.log(event.target.outerText)
     setErrorsCurrent(event.target.outerText)
-    event.target.parentElement.nextSibling.value = event.target.dataset.value
   }
   return (
     <FiltersStyled>
@@ -114,7 +118,6 @@ export const Filters:FC = () => {
           <li className={`types__item ${typesCurrent==='Рабочие'?'item__current':''}`} onClick={typesClickHandler} data-value="workers">Рабочие</li>
           <li className={`types__item ${typesCurrent==='Приложение'?'item__current':''}`} onClick={typesClickHandler} data-value="app">Приложение</li>
         </ul>
-        <input className='f-input' type="text" name='types__input' defaultValue={''}/>
       </div>
       <div className="employees f-por">
         <div className="employees__current">{employeesCurrent}</div>
@@ -130,7 +133,6 @@ export const Filters:FC = () => {
             <img src={avatar} className="item__avatar" />
           </li>
         </ul>
-        <input className='f-input' type="text" name='employees__input' defaultValue={''}/>
       </div>
       <div className="calls f-por">
         <div className="calls__current">{callsCurrent}</div>
@@ -142,7 +144,6 @@ export const Filters:FC = () => {
           <li className={`calls__item ${callsCurrent==='Через приложение'?'item__current':''}`} onClick={callsClickHandler} data-value="">Через приложение</li>
           <li className={`calls__item ${callsCurrent==='Прочие звонки'?'item__current':''}`} onClick={callsClickHandler} data-value="">Прочие звонки</li>
         </ul>
-        <input className='f-input' type="text" name='calls__input' defaultValue={''}/>
       </div>
       <div className="sources f-por">
         <div className="sources__current">{sourcesCurrent}</div>
@@ -154,7 +155,6 @@ export const Filters:FC = () => {
           <li className={`sources__item ${sourcesCurrent==='Google номер'?'item__current':''}`} onClick={sourcesClickHandler} data-value="google">Google номер</li>
           <li className={`sources__item ${sourcesCurrent==='Без источника'?'item__current':''}`} onClick={sourcesClickHandler} data-value="empty">Без источника</li>
         </ul>
-        <input className='f-input' type="text" name='sources__input' defaultValue={''}/>
       </div>
       <div className="grades f-por">
         <div className="grades__current">{gradesCurrent}</div>
@@ -167,7 +167,6 @@ export const Filters:FC = () => {
           <li className={`grades__item ${gradesCurrent==='...'?'item__current':''}`} onClick={gradesClickHandler} data-value=""><FineSVG /></li>
           <li className={`grades__item ${gradesCurrent==='...'?'item__current':''}`} onClick={gradesClickHandler} data-value=""><BadlySVG /></li>
         </ul>
-        <input className='f-input' type="text" name='grades__input' defaultValue={''}/>
       </div>
       <div className="errors f-por">
         <div className="errors__current">{errorsCurrent}</div>
@@ -182,7 +181,6 @@ export const Filters:FC = () => {
           <li className={`errors__item  ${errorsCurrent==='Благодарность'?'item__current':''}`} onClick={errorsClickHandler} data-value="">Благодарность</li>
           <li className={`errors__item  ${errorsCurrent==='Стоп слова'?'item__current':''}`} onClick={errorsClickHandler} data-value="">Стоп слова</li>
         </ul>
-        <input className='f-input' type="text" name='errors__input' defaultValue={''}/>
       </div>
     </FiltersStyled>
   )
